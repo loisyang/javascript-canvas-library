@@ -1,262 +1,282 @@
-<p><link href="../stylesheets/GitHub2.css" rel="stylesheet"></link></p>
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>SSUI Web Project2</title>
+        <meta name="description" content="An interactive getting started guide for Brackets.">
+        <link rel="stylesheet" href="main.css">
+        <script src="animation.js"></script>
+    </head>
+    <body>
+        
+        <p><link href="../stylesheets/GitHub2.css" rel="stylesheet"></link></p>
 
-<h3>05-633D Web Lab</h3>
+        <h3>05-633D Web Lab</h3>
 
-<h1>Project 2: Your Own <code>&lt;canvas&gt;</code> Drawing Library</h1>
+        <h1>Project 2: Your Own <code>&lt;canvas&gt;</code> Drawing Library</h1>
 
-<p><img src="title.png" width="400" height="100" /></p>
+        <p><img src="title.png" width="400" height="100" /></p>
 
-<p>Due: Wednesday, October 1, 2014 by 8:00pm</p>
+        <p>Due: Wednesday, October 14, 2015 by 8:00pm</p>
 
-<h2>Goal</h2>
+        <h2>Goal</h2>
 
-<p>The goal of this project is to create a re-usable drawing library for creating interactive content on the <code>&lt;canvas&gt;</code> tag. Some pre-existing libraries are <a href="http://raphaeljs.com">Raphael</a>, <a href="http://processingjs.org">Processing</a>, and <a href="http://fabricjs.com/">fabric.js</a>. For this project, you’re going to write your own drawing library, and then use this library to create an interesting doodle of your own!</p>
+        <p>The goal of this project is to create a re-usable drawing library for creating interactive content on the <code>&lt;canvas&gt;</code> tag. Some pre-existing libraries are <a href="http://raphaeljs.com">Raphael</a>, <a href="http://processingjs.org">Processing</a>, and <a href="http://fabricjs.com/">fabric.js</a>. For this project, you’re going to write your own drawing library, and then use this library to create an interesting doodle of your own!</p>
 
-<h2>Files Provided</h2>
+        <h2>Files Provided</h2>
 
-<p>The following files are in the same .zip folder as this project description was in:</p>
+        <p>The following files are in the same .zip folder as this project description was in:</p>
 
-<ul>
-<li><a href="doodle-library.js">doodle-library.js</a>: Skeleton code for the JavaScript library you will be creating.</li>
-<li><a href="utils.js">utils.js</a>: Utility functions that have been provided for you.</li>
-<li><a href="primitive-test.html">primitive-test.html</a>: HTML file that is provided for you to test your library.</li>
-<li><a href="primitive-test.js">primitive-test.js</a>: JavaScript file that is provided for you to test your library.</li>
-<li><a href="container-test.html">container-test.html</a>: HTML file that is provided for you to test your library.</li>
-<li><a href="container-test.js">container-test.js</a>: JavaScript file that is provided for you to test your library.</li>
-<li><a href="primitives.png">primitives.png</a>: Screenshot of test output for first part of tests (i.e. simple primitives)</li>
-<li><a href="containers.png">containers.png</a>: Screenshot of text output for second part of tests (i.e. complex containers)</li>
-</ul>
+        <ul>
+        <li><a href="doodle-library.js">doodle-library.js</a>: Skeleton code for the JavaScript library you will be creating.</li>
+        <li><a href="utils.js">utils.js</a>: Utility functions that have been provided for you.</li>
+        <li><a href="primitive-test.html">primitive-test.html</a>: HTML file that is provided for you to test your library.</li>
+        <li><a href="primitive-test.js">primitive-test.js</a>: JavaScript file that is provided for you to test your library.</li>
+        <li><a href="container-test.html">container-test.html</a>: HTML file that is provided for you to test your library.</li>
+        <li><a href="container-test.js">container-test.js</a>: JavaScript file that is provided for you to test your library.</li>
+        <li><a href="primitives.png">primitives.png</a>: Screenshot of test output for first part of tests (i.e. simple primitives)</li>
+        <li><a href="containers.png">containers.png</a>: Screenshot of text output for second part of tests (i.e. complex containers)</li>
+        </ul>
 
-<h2>Project Overview</h2>
+        <h2>Project Overview</h2>
 
-<p>This project has two parts. The first part is to create a drawing library for <code>&lt;canvas&gt;</code> that provides a few basic functions to make drawing using canvas easier. The second part is to use your library to create a cool doodle (ideas at <a href="http://www.google.com/logos/">http://www.google.com/logos/</a>). </p>
+        <p>This project has two parts. The first part is to create a drawing library for <code>&lt;canvas&gt;</code> that provides a few basic functions to make drawing using canvas easier. The second part is to use your library to create a cool doodle (ideas at <a href="http://www.google.com/logos/">http://www.google.com/logos/</a>). </p>
 
-<h3>Part I: Drawing Library</h3>
+        <h3>Part I: Drawing Library</h3>
 
-<p>Your drawing library must implement the objects specified below. Your objects should have at least the methods and attributes specified below (though you may add more if you wish). The utils.js file provides a mechanism for executing inheritance, as well as other useful functions for setting default values. Inheritance has already been set up for you in the skeleton code, and you can use it for creating new objects for extra credit.</p>
+        <p>Your drawing library must implement the objects specified below. Your objects should have at least the methods and attributes specified below (though you may add more if you wish). The utils.js file provides a mechanism for executing inheritance, as well as other useful functions for setting default values. Inheritance has already been set up for you in the skeleton code, and you can use it for creating new objects for extra credit.</p>
 
-<p>Your objects will need to follow a specific layout protocol. There is a root entity (a Doodle) which represents the <code>&lt;canvas&gt;</code> element that you’re drawing on. Its purpose is to hold and draw all of the elements in your doodle. It cannot be rotated or translated. </p>
+        <p>Your objects will need to follow a specific layout protocol. There is a root entity (a Doodle) which represents the <code>&lt;canvas&gt;</code> element that you’re drawing on. Its purpose is to hold and draw all of the elements in your doodle. It cannot be rotated or translated. </p>
 
-<p>Every drawable object in a doodle has left and top coordinates. Left and top specify the reference frame for the object; when the object draws itself, it treats its left and top as the origin, (0, 0). Therefore, x and y coordinates in the attributes for an object, such as a line or a path, are relative to the object’s left and top.</p>
+        <p>Every drawable object in a doodle has left and top coordinates. Left and top specify the reference frame for the object; when the object draws itself, it treats its left and top as the origin, (0, 0). Therefore, x and y coordinates in the attributes for an object, such as a line or a path, are relative to the object’s left and top.</p>
 
-<p>For example, the figure below shows a container with a single child container. The child container has a left and top of (10, 10), so it is drawn at (10, 10) in the parent’s coordinate system. The line inside the child container, however, treats the left, top point of the container as (0, 0) when drawing its endpoints.</p>
+        <p>For example, the figure below shows a container with a single child container. The child container has a left and top of (10, 10), so it is drawn at (10, 10) in the parent’s coordinate system. The line inside the child container, however, treats the left, top point of the container as (0, 0) when drawing its endpoints.</p>
 
-<p><img src="reference_frames.png" alt="Containers and reference frames" title="" /></p>
+        <p><img src="reference_frames.png" alt="Containers and reference frames" title="" /></p>
 
-<p>When a container object (such as a Doodle or Container object) draws one of its child elements, it first translates and rotates the child element according to the child’s left and top attributes. It then calls the child’s draw function.
-The following are specifications for the objects you must implement. Stubs for these objects are provided in the starter code.</p>
+        <p>When a container object (such as a Doodle or Container object) draws one of its child elements, it first translates and rotates the child element according to the child’s left and top attributes. It then calls the child’s draw function.
+        The following are specifications for the objects you must implement. Stubs for these objects are provided in the starter code.</p>
 
-<h4>Doodle</h4>
+        <h4>Doodle</h4>
 
-<p>A Doodle is the root container for all drawable elements. It represents the canvas on which all other elements will be drawn. When drawing using this library, the first element created is an instance of this Doodle element. Additional elements are added as children to the root Doodle element.</p>
+        <p>A Doodle is the root container for all drawable elements. It represents the canvas on which all other elements will be drawn. When drawing using this library, the first element created is an instance of this Doodle element. Additional elements are added as children to the root Doodle element.</p>
 
-<p>Constructor Parameter:</p>
+        <p>Constructor Parameter:</p>
 
-<ul>
-<li>context: The drawing context for the object</li>
-</ul>
+        <ul>
+        <li>context: The drawing context for the object</li>
+        </ul>
 
-<p>Methods:</p>
+        <p>Methods:</p>
 
-<ul>
-<li>draw: Draws its children. If a child is not visible, does not draw the child. Scales, translates, and rotates the child according to the child's scale, (left, top), and theta variables.</li>
-</ul>
+        <ul>
+        <li>draw: Draws its children. If a child is not visible, does not draw the child. Scales, translates, and rotates the child according to the child's scale, (left, top), and theta variables.</li>
+        </ul>
 
-<p>Fields:</p>
+        <p>Fields:</p>
 
-<ul>
-<li>context: The drawing context for the object, generated by a canvas </li>
-<li>children: An array of the top-level drawable elements in this doodle. Hint: The drawing context is stored in Doodle (the canvas object) and can be passed to methods of a child element to do drawing.</li>
-</ul>
+        <ul>
+        <li>context: The drawing context for the object, generated by a canvas </li>
+        <li>children: An array of the top-level drawable elements in this doodle. Hint: The drawing context is stored in Doodle (the canvas object) and can be passed to methods of a child element to do drawing.</li>
+        </ul>
 
-<h4>Text</h4>
+        <h4>Text</h4>
 
-<p>Inherits from: Drawable </p>
+        <p>Inherits from: Drawable </p>
 
-<p>A Text object draws text with the given attributes. Note: Text is always drawn up from the bottom of the object. This is because there is no simple way to measure the height of a text string using canvas, so we explicitly define it with height.</p>
+        <p>A Text object draws text with the given attributes. Note: Text is always drawn up from the bottom of the object. This is because there is no simple way to measure the height of a text string using canvas, so we explicitly define it with height.</p>
 
-<p>Constructor Parameter: </p>
+        <p>Constructor Parameter: </p>
 
-<ul>
-<li>attrs: An object containing values for each of the fields in the object. If the attrs parameter is not specified, or if one of the fields is not specified, use predefined defaults (defined for you).</li>
-</ul>
+        <ul>
+        <li>attrs: An object containing values for each of the fields in the object. If the attrs parameter is not specified, or if one of the fields is not specified, use predefined defaults (defined for you).</li>
+        </ul>
 
-<p>Methods:</p>
+        <p>Methods:</p>
 
-<ul>
-<li>draw: Draw the text using the values defined in attrs.</li>
-</ul>
+        <ul>
+        <li>draw: Draw the text using the values defined in attrs.</li>
+        </ul>
 
-<p>Fields (in addition to those specified by ancestors): </p>
+        <p>Fields (in addition to those specified by ancestors): </p>
 
-<ul>
-<li>content: The text string to draw. </li>
-<li>fill: The fill color of the text. Specify in the form of a CSS color.</li>
-<li>font: The font style of the text. You can again use the CSS font specification.</li>
-<li>height: The height of your text, in pixels. </li>
-</ul>
+        <ul>
+        <li>content: The text string to draw. </li>
+        <li>fill: The fill color of the text. Specify in the form of a CSS color.</li>
+        <li>font: The font style of the text. You can again use the CSS font specification.</li>
+        <li>height: The height of your text, in pixels. </li>
+        </ul>
 
-<h4>DoodleImage</h4>
+        <h4>DoodleImage</h4>
 
-<p>Inherits from: Drawable</p>
+        <p>Inherits from: Drawable</p>
 
-<p>A DoodleImage object draws an image. This may be a bit trickier than the other primitives to implement, because it has to load the image file before being drawn. You can get around this by making draw() wait until the image is loaded, or by making the whole Doodle wait to be drawn until all the images are loading. Your solution here might be a little hacky, that's ok.</p>
+        <p>A DoodleImage object draws an image. This may be a bit trickier than the other primitives to implement, because it has to load the image file before being drawn. You can get around this by making draw() wait until the image is loaded, or by making the whole Doodle wait to be drawn until all the images are loading. Your solution here might be a little hacky, that's ok.</p>
 
-<p>Constructor Parameter:</p>
+        <p>Constructor Parameter:</p>
 
-<ul>
-<li>attrs: An object containing values for each of the fields in the object. If the attrs parameter is not specified, or if one of the fields is not specified, use predefined defaults (defined for you).</li>
-</ul>
+        <ul>
+        <li>attrs: An object containing values for each of the fields in the object. If the attrs parameter is not specified, or if one of the fields is not specified, use predefined defaults (defined for you).</li>
+        </ul>
 
-<p>Methods:</p>
+        <p>Methods:</p>
 
-<ul>
-<li>draw: Draw the image using the specified source, with the specified width and height.</li>
-</ul>
+        <ul>
+        <li>draw: Draw the image using the specified source, with the specified width and height.</li>
+        </ul>
 
-<p>Fields (in addition to those specified by ancestors):</p>
+        <p>Fields (in addition to those specified by ancestors):</p>
 
-<ul>
-<li>width: The width of the image. Default is -1. If image width is -1, use the natural width of the image.</li>
-<li>height: The height of the image. Default is -1. If image height is -1, use the natural height of the image.</li>
-<li>src: The location of the image (specify a path).</li>
-</ul>
+        <ul>
+        <li>width: The width of the image. Default is -1. If image width is -1, use the natural width of the image.</li>
+        <li>height: The height of the image. Default is -1. If image height is -1, use the natural height of the image.</li>
+        <li>src: The location of the image (specify a path).</li>
+        </ul>
 
-<h4>Line</h4>
+        <h4>Line</h4>
 
-<p>Inherits from: Primitive</p>
+        <p>Inherits from: Primitive</p>
 
-<p>Draws a single line. </p>
+        <p>Draws a single line. </p>
 
-<p>Constructor Parameter:</p>
+        <p>Constructor Parameter:</p>
 
-<ul>
-<li>attrs: An object containing values for each of the fields in the object. If the attrs parameter is not specified, or if one of the fields is not specified, use predefined defaults (defined for you).</li>
-</ul>
+        <ul>
+        <li>attrs: An object containing values for each of the fields in the object. If the attrs parameter is not specified, or if one of the fields is not specified, use predefined defaults (defined for you).</li>
+        </ul>
 
-<p>Methods:</p>
+        <p>Methods:</p>
 
-<ul>
-<li>draw: Draw the line.</li>
-</ul>
+        <ul>
+        <li>draw: Draw the line.</li>
+        </ul>
 
-<p>Fields (in addition to those specified by ancestors):</p>
+        <p>Fields (in addition to those specified by ancestors):</p>
 
-<ul>
-<li>startX: Starting x coordinate of line. Must be >=0.</li>
-<li>startY: Starting y coordinate of line. Must be >=0.</li>
-<li>endX: Ending x coordinate of line. Must be >=0.</li>
-<li>endY: Ending y coordinate of line. Must be >=0.</li>
-</ul>
+        <ul>
+        <li>startX: Starting x coordinate of line. Must be >=0.</li>
+        <li>startY: Starting y coordinate of line. Must be >=0.</li>
+        <li>endX: Ending x coordinate of line. Must be >=0.</li>
+        <li>endY: Ending y coordinate of line. Must be >=0.</li>
+        </ul>
 
-<h4>Rectangle</h4>
+        <h4>Rectangle</h4>
 
-<p>Inherits from: Primitive (already implemented for you)</p>
+        <p>Inherits from: Primitive (already implemented for you)</p>
 
-<p>Draws a rectangle (not filled in).</p>
+        <p>Draws a rectangle (not filled in).</p>
 
-<p>Constructor Parameter:</p>
+        <p>Constructor Parameter:</p>
 
-<ul>
-<li>attrs: An object containing values for each of the fields in the object. If the attrs parameter is not specified, or if one of the fields is not specified, use predefined defaults (defined for you).</li>
-</ul>
+        <ul>
+        <li>attrs: An object containing values for each of the fields in the object. If the attrs parameter is not specified, or if one of the fields is not specified, use predefined defaults (defined for you).</li>
+        </ul>
 
-<p>Methods (in addition to those specified by ancestors):</p>
+        <p>Methods (in addition to those specified by ancestors):</p>
 
-<ul>
-<li>draw: Draw the rectangle as specified by x, y, width, and height. (just the outline, not filled in.)</li>
-</ul>
+        <ul>
+        <li>draw: Draw the rectangle as specified by x, y, width, and height. (just the outline, not filled in.)</li>
+        </ul>
 
-<p>Fields (in addition to those specified by ancestors):</p>
+        <p>Fields (in addition to those specified by ancestors):</p>
 
-<ul>
-<li>x: x coordinate of the top left corner of the rectangle</li>
-<li>y: y coordinate of the top left corner of the rectangle</li>
-<li>width: width of the rectangle</li>
-<li>height: height of the rectangle</li>
-</ul>
+        <ul>
+        <li>x: x coordinate of the top left corner of the rectangle</li>
+        <li>y: y coordinate of the top left corner of the rectangle</li>
+        <li>width: width of the rectangle</li>
+        <li>height: height of the rectangle</li>
+        </ul>
 
-<h4>Container</h4>
+        <h4>Container</h4>
 
-<p>Inherits from: Drawable</p>
+        <p>Inherits from: Drawable</p>
 
-<p>A container is a rectangular object that can have other drawable objects as children. When drawn, the container draws itself as well as all of its children. All children inside the container are first rotated, then translated to their (left, top) positions and drawn (note: transformations execute in reverse order, so to implement this first do translate, then rotate). The container also clips all of its content to its bounds.</p>
+        <p>A container is a rectangular object that can have other drawable objects as children. When drawn, the container draws itself as well as all of its children. All children inside the container are first rotated, then translated to their (left, top) positions and drawn (note: transformations execute in reverse order, so to implement this first do translate, then rotate). The container also clips all of its content to its bounds.</p>
 
-<p>Constructor Parameter:</p>
+        <p>Constructor Parameter:</p>
 
-<ul>
-<li>attrs: An object containing values for each of the fields in the object. If the attrs parameter is not specified, or if one of the fields is not specified, use predefined defaults (defined for you).</li>
-</ul>
+        <ul>
+        <li>attrs: An object containing values for each of the fields in the object. If the attrs parameter is not specified, or if one of the fields is not specified, use predefined defaults (defined for you).</li>
+        </ul>
 
-<p>Methods:</p>
+        <p>Methods:</p>
 
-<ul>
-<li>draw: Draws itself and its children. If a child is not visible (visible property set to false), does not draw it. Scales, translates, and rotates children according to each child's scale, (left, top), and theta values.</li>
-</ul>
+        <ul>
+        <li>draw: Draws itself and its children. If a child is not visible (visible property set to false), does not draw it. Scales, translates, and rotates children according to each child's scale, (left, top), and theta values.</li>
+        </ul>
 
-<p>Fields (in addition to those specified by ancestors):</p>
+        <p>Fields (in addition to those specified by ancestors):</p>
 
-<ul>
-<li>width: The width of the container</li>
-<li>height: The height of the container</li>
-<li>borderWidth: How wide the container’s border is. </li>
-<li>borderColor: Color of the border. </li>
-<li>fill: Fill color of the container. Default value is "". If fill is not specified or "", do not fill in the container.</li>
-<li>children: Drawable objects that are located within the container.</li>
-</ul>
+        <ul>
+        <li>width: The width of the container</li>
+        <li>height: The height of the container</li>
+        <li>borderWidth: How wide the container’s border is. </li>
+        <li>borderColor: Color of the border. </li>
+        <li>fill: Fill color of the container. Default value is "". If fill is not specified or "", do not fill in the container.</li>
+        <li>children: Drawable objects that are located within the container.</li>
+        </ul>
 
-<h3>Testing Part I</h3>
+        <h3>Testing Part I</h3>
 
-<p>We have provided code for you to test out your drawing library. The test code has two different parts. The first part (test-primitives.html) makes a drawing using only the primitives in your library (i.e. no containers). You should probably start implementing only the primitives, and make sure test-primitives.html works before moving on to the next part. The next part (test-containers.html) tests whether your container code works. test-containers.html assumes that test-primitives.html works, so you should do test this second. We have also included images with the expected output. </p>
+        <p>We have provided code for you to test out your drawing library. The test code has two different parts. The first part (test-primitives.html) makes a drawing using only the primitives in your library (i.e. no containers). You should probably start implementing only the primitives, and make sure test-primitives.html works before moving on to the next part. The next part (test-containers.html) tests whether your container code works. test-containers.html assumes that test-primitives.html works, so you should do test this second. We have also included images with the expected output. </p>
 
-<h3>Part II: Make a Doodle</h3>
+        <h3>Part II: Make a Doodle</h3>
 
-<p>Make a doodle similar to a Google doodle to show off your library. Your doodle should have some text in it; however it does not need to say Google. You can use your name as your doodle, for example. I will be grading your doodle based on how interesting it is.</p>
+        <p>Make a doodle similar to a Google doodle to show off your library. Your doodle should have some text in it; however it does not need to say Google. You can use your name as your doodle, for example. I will be grading your doodle based on how interesting it is.</p>
 
-<h3>Bells and Whistles</h3>
+        <h3>Bells and Whistles</h3>
 
-<p>Completing the above requirements and having well-documented code with no errors will get you 45 out of 50 points, which is an A. You must complete one of the below ‘bells and whistles’ to get full points. You can complete as many of these as you want, but you will get no more than 10 points total. Different bonuses are worth different numbers of points, based on difficulty. You may receive up to 10 points for bells and whistles, bringing you up to up to 5 extra credit points.</p>
+        <p>Completing the above requirements and having well-documented code with no errors will get you 45 out of 50 points, which is an A. You must complete one of the below ‘bells and whistles’ to get full points. You can complete as many of these as you want, but you will get no more than 10 points total. Different bonuses are worth different numbers of points, based on difficulty. You may receive up to 10 points for bells and whistles, bringing you up to up to 5 extra credit points.</p>
 
-<ol>
-<li>Implement some fancy container (5 points): Implement a container that can be in an arbitrary shape. Make sure to include documentation that explains what you do!</li>
-<li>Enable animation (up to 10 points): There are many ways that you could potentially add animation to your code. Depending on the complexity of the animations you enable and their extensibility, I will assign up to 10 points for enabling animation. Make sure you thoroughly document your animation code (either in comments or a readme file).</li>
-<li>Make an awesome doodle (up to 10 points): I will be awarding especially creative doodles extra credit.</li>
-<li>Handle Input (up to 10 points): Make your doodle interactive by handling input (i.e. mouse or keyboard events). I will award up to 10 points for this, based on how complex and extensible your implementation is.</li>
-<li>Add parsing (10 points): Create an XML parser that will take an XML description of a scene and either output code to draw this or draw the parser.</li>
-<li>Build a drawing application for your library (10 points): Create an application that allows you to create drawings and then save your drawings by generating code to re-create your drawing. Your drawing should support structure (i.e. you should be able to add items in containers). </li>
-</ol>
+        <ol>
+        <li>Implement some fancy container (5 points): Implement a container that can be in an arbitrary shape. Make sure to include documentation that explains what you do!</li>
+        <li>Enable animation (up to 10 points): There are many ways that you could potentially add animation to your code. Depending on the complexity of the animations you enable and their extensibility, I will assign up to 10 points for enabling animation. Make sure you thoroughly document your animation code (either in comments or a readme file).</li>
+        <li>Make an awesome doodle (up to 10 points): I will be awarding especially creative doodles extra credit.</li>
+        <li>Handle Input (up to 10 points): Make your doodle interactive by handling input (i.e. mouse or keyboard events). I will award up to 10 points for this, based on how complex and extensible your implementation is.</li>
+        <li>Add parsing (10 points): Create an XML parser that will take an XML description of a scene and either output code to draw this or draw the parser.</li>
+        <li>Build a drawing application for your library (10 points): Create an application that allows you to create drawings and then save your drawings by generating code to re-create your drawing. Your drawing should support structure (i.e. you should be able to add items in containers). </li>
+        </ol>
 
-<h3>Show and Tell</h3>
+        <h3>Show and Tell</h3>
 
-<p>We will be picking the nicest doodles and showing them to the class. They may also be put on a public website. Please let me know if you do not want your solution shown in the README file in your assignment. </p>
+        <p>We will be picking the nicest doodles and showing them to the class. They may also be put on a public website. Please let me know if you do not want your solution shown in the README file in your assignment. </p>
 
-<h3>Turning Your Program In</h3>
+        <h3>Turning Your Program In</h3>
 
-<p>This project has the same procedure as Projects 0 and 1. Make sure to include the following files:</p>
+        <p>This project has the same procedure as Projects 0 and 1. Make sure to include the following files:</p>
 
-<ul>
-<li>doodle-library.js: Your completed doodle library</li>
-<li>doodle.html: HTML file of your doodle</li>
-<li>doodle.js: JavaScript file of your doodle</li>
-<li>primitive-test.html: Keep all of the test files</li>
-<li>primitive-test.js: Keep all of the test files</li>
-<li>container-test.html: Keep all of the test files</li>
-<li>container-test.js: Keep all of the test files</li>
-<li>README.txt</li>
-</ul>
+        <ul>
+        <li>doodle-library.js: Your completed doodle library</li>
+        <li>doodle.html: HTML file of your doodle</li>
+        <li>doodle.js: JavaScript file of your doodle</li>
+        <li>primitive-test.html: Keep all of the test files</li>
+        <li>primitive-test.js: Keep all of the test files</li>
+        <li>container-test.html: Keep all of the test files</li>
+        <li>container-test.js: Keep all of the test files</li>
+        <li>README.txt</li>
+        </ul>
 
-<p>The project is due Wednesday, October 1, 2013 at 8:00 pm. You should turn in your assignment via Blackboard, attaching a zip file with the contents below. Please write a README.txt file which mentions any online sources you used to help with the project, as well as any notes about your programs (i.e. if you couldn’t get a particular part of the project to work). Name the file <code>lastname_firstname_P#.zip</code>.  For example: <code>tasse_dan_p2.zip</code></p>
+        <p>The project is due Wednesday, October 1, 2013 at 8:00 pm. You should turn in your assignment via Blackboard, attaching a zip file with the contents below. Please write a README.txt file which mentions any online sources you used to help with the project, as well as any notes about your programs (i.e. if you couldn’t get a particular part of the project to work). Name the file <code>lastname_firstname_P#.zip</code>.  For example: <code>tasse_dan_p2.zip</code></p>
 
-<h3>Grading</h3>
+        <h3>Grading</h3>
 
-<p>Your assignment will be graded as follows:</p>
+        <p>Your assignment will be graded as follows:</p>
 
-<ul>
-<li>Turn in is correct, code has no syntax errors: 5 pts</li>
-<li>Correct implementation of classes related to container: 15 pts</li>
-<li>Aesthetics of your doodle: 5 pts</li>
-<li>Use of inheritance, elegance of code: 10 pts</li>
-<li>Correct implementation of non-container classes: 15 pts</li>
-<li>Bells and whistles: 5 – 10 pts</li>
-<li>Formatting, comments and coding style: 5 pts</li>
-</ul>
+        <ul>
+        <li>Turn in is correct, code has no syntax errors: 5 pts</li>
+        <li>Correct implementation of classes related to container: 15 pts</li>
+        <li>Aesthetics of your doodle: 5 pts</li>
+        <li>Use of inheritance, elegance of code: 10 pts</li>
+        <li>Correct implementation of non-container classes: 15 pts</li>
+        <li>Bells and whistles: 5 – 10 pts</li>
+        <li>Formatting, comments and coding style: 5 pts</li>
+        </ul>
+        
+        
+    </body>
+</html>
+
+
+

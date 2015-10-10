@@ -1,5 +1,3 @@
-
-
 window.onload = function () {
 
   var canvas = document.getElementById("myCanvas");
@@ -56,9 +54,12 @@ window.onload = function () {
     borderWidth: 3
   }
   );
-  
+   
   imgFrame.children.push( new DoodleImage({src: "kitty.jpg" }));
+  console.log("DoodleImage: " + imgFrame.children[0].left + ", " + imgFrame.children[0].top);
   imgFrameFrame.children.push(imgFrame);
+  console.log("imgFrame: " + imgFrameFrame.children[0].left + ", " +imgFrameFrame.children[0].top);
+  console.log("imgFrameFrame: " + imgFrameFrame.left + ", " +imgFrameFrame.top);
   rotContainer1.children.push(rotContainer2);
   rotContainer2.children.push(rotTextContainer);
   rotTextContainer.children.push(rotText);
