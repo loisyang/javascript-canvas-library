@@ -16,14 +16,26 @@ function Doodle (context) {
     this.children = [];
 }
 
+var num_of_image = 0;
+var num_onload = 0;
+
 Doodle.prototype.draw = function() {
 	// Your draw code here
-    for (var i = 0; i < this.children.length; i++) {
-        this.context.save();
-        if (this.children[i].visible) {
-            this.children[i].draw(this.context);
+    var self = this;
+    if (num_onload !== num_of_image){
+        setTimeout(function() {
+            self.context.save();
+            self.draw(self.context);
+            self.context.restore();
+        }, 100)
+    } else {
+        for (var i = 0; i < this.children.length; i++) {
+            if (this.children[i].visible) {
+                this.context.save();
+                this.children[i].draw(this.context);
+                this.context.restore();
+            }
         }
-        this.context.restore();
     }
 };
 
@@ -45,6 +57,22 @@ function Drawable (attrs) {
     this.visible = attrs.visible;
     this.theta = attrs.theta*Math.PI/180;
     this.scale = attrs.scale;
+}
+
+/*
+ * Summary: returns the calculated width of this object
+ */
+Drawable.prototype.getWidth = function(context) {
+  console.log("ERROR: Calling unimplemented draw method on drawable object.");
+  return 0;
+}
+
+/*
+ * Summary: returns the calculated height of this object
+ */
+Drawable.prototype.getHeight = function(context) {
+  console.log("ERROR: Calling unimplemented draw method on drawable object.");
+  return 0;
 }
 
 /*
@@ -75,9 +103,10 @@ Primitive.inheritsFrom(Drawable);
 function Text(attrs) {
     var dflt = {
         content: "",
-        fill: "black",
-        font: "12pt Helvetica",
-        height: 12
+        fill: "black", //color
+        font: "Helvetica", //font family
+        size: 12, //Size in pt
+        bold: false //bold boolean
     };
     attrs = mergeWithDefault(attrs, dflt);
     Drawable.call(this, attrs);
@@ -86,8 +115,8 @@ function Text(attrs) {
     this.fill = attrs.fill;
     this.font = attrs.font;
     this.height = attrs.height;
-//    this.size = attrs.size;
-//    this.bold = attrs.bold;
+    this.size = attrs.size;
+    this.bold = attrs.bold;
 }
 Text.inheritsFrom(Drawable);
 
@@ -99,7 +128,8 @@ Text.prototype.draw = function (context) {
     context.beginPath();
     context.font = this.font;
     context.fillStyle = this.fill;
-    // size and bold
+    // context.style.size = this.size + "pt";
+    if (this.bold) { context.style.bold;}
     context.fillText(this.content, 0, this.height);
     context.closePath();
 
@@ -119,49 +149,48 @@ Text.prototype.getHeight = function (context) {
 
 function DoodleImage(attrs) {
     var dflt = {
-        width: 0,
-        height: 0,
+        width: -1,
+        height: -1,
         src: "",
     };
     attrs = mergeWithDefault(attrs, dflt);
     Drawable.call(this, attrs);
 	// rest of constructor code here
+    this.src = attrs.src;
     this.width = attrs.width;
     this.height = attrs.height;
-    this.src = attrs.src;
+    this.img = new Image();
+    this.img.src = this.src
+    num_of_image++;
+    this.img.onload = function() {
+        num_onload++;
+    }
 }
 DoodleImage.inheritsFrom(Drawable);
 
 DoodleImage.prototype.draw = function (context) {
     // draw code here
-    var self = this;
-    var img = new Image();
-    img.src = this.src;
-    
-    img.onload = function() {
-        context.save();
-        console.log("I start drawing");
-        context.translate(self.left, self.top);
-        context.rotate(self.theta);
-        context.scale(self.scale, self.scale);
-        context.beginPath();
-        if (self.width >= 0 && self.height >= 0) {
-            context.drawImage(img, 0, 0, self.width, self.height);
-            console.log("I finish drawing");
-        } else {
-            context.drawImage(img, 0, 0);
-        }
-        context.closePath();
-        context.restore();
+    context.save();
+    console.log("I start drawing" + this.img.src);
+    context.translate(this.left, this.top);
+    context.rotate(this.theta);
+    context.scale(this.scale, this.scale);
+    context.beginPath();
+    if (this.width >= 0 && this.height >= 0) {
+        context.drawImage(this.img, 0, 0, this.width, this.height);
+        console.log("I finish drawing");
+    } else {
+        context.drawImage(this.img, 0, 0);
     }
+    context.closePath();
+    context.restore();
 }
 
-DoodleImage.prototype.getWidth = function () {
-    
+DoodleImage.prototype.getWidth = function (context) {
     return this.width;   
 }
 
-DoodleImage.prototype.getHeight = function () {
+DoodleImage.prototype.getHeight = function (context) {
     return this.height;   
 }
 
@@ -238,11 +267,11 @@ Rectangle.prototype.draw = function (context) {
     context.closePath();
 };
 
-Rectangle.prototype.getWidth = function () {
+Rectangle.prototype.getWidth = function (context) {
     return this.width;
 }
 
-Rectangle.prototype.getHeight = function () {
+Rectangle.prototype.getHeight = function (context) {
     return this.height;
 }
 
@@ -250,7 +279,7 @@ function Container(attrs) {
     var dflt = {
         width: 100,
         height: 100,
-        fill: "",
+        fill: false,
         borderColor: "black",
         borderWidth: 0,
     };
@@ -275,10 +304,14 @@ Container.prototype.draw = function (context) {
     context.scale(this.scale, this.scale);
     // draw container
     context.beginPath();
-    context.rect(0,0,this.width, this.height);
+    context.moveTo(0,0);
+    context.lineTo(this.width,0);
+    context.lineTo(this.width,this.height);
+    context.lineTo(0,this.height);
+    context.lineTo(0,0);
     context.closePath();
     
-    if (this.fill != "") {
+    if (this.fill != false) {
         context.fillStyle = this.fill;
         context.fill();
     }
@@ -299,8 +332,11 @@ Container.prototype.draw = function (context) {
         }
     }
     context.restore();        
+    
  
 };
+
+//Rest of container methods here
 
 //layout Performs layout on the children objects before it draws them.
 Container.prototype.layout = function (context) {
@@ -316,15 +352,18 @@ Container.prototype.getHeight = function () {
     return this.height;
 }
 
+//Places all of its children at its own top-left corner.
 function Pile(attrs) {
   Container.call(this, attrs);   
   //Rest of constructor code here
 }
-
 Pile.inheritsFrom(Container);
 
 //Rest of pile methods here
 
+//Places its children in a single horizontal row with the children vertically centered. 
+//If the children do not fit within the bounds of the row object 
+//they are clipped at the right edge.
 function Row(attrs) {
   Container.call(this, attrs);    
   //Rest of constructor code here
