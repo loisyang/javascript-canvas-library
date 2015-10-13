@@ -126,9 +126,8 @@ Text.prototype.draw = function (context) {
     context.rotate(this.theta);
     context.scale(this.scale, this.scale);
     context.beginPath();
-    context.font = this.font;
+    context.font = this.size + "pt"+" "+this.font;
     context.fillStyle = this.fill;
-    // context.style.size = this.size + "pt";
     if (this.bold) { context.style.bold;}
     context.fillText(this.content, 0, this.height);
     context.closePath();
@@ -137,14 +136,14 @@ Text.prototype.draw = function (context) {
 
 //getWidth Return the width of the text (use the MeasureText helper method provided)
 Text.prototype.getWidth = function (context) {
-    textMeasure = context.measureText;
-    return textMeasure.width
+    var textMeasure = MeasureText(this.content, this.bold, this.font, this.size);
+    return textMeasure[0];
 }
 
 //getHeight Return the height of the text (use the MeasureText helper method provided)
 Text.prototype.getHeight = function (context) {
-    textMeasure = context.measureText;
-    return textMeasure.height
+    var textMeasure = MeasureText(this.content, this.bold, this.font, this.size);
+    return textMeasure[1];
 }
 
 function DoodleImage(attrs) {
@@ -171,14 +170,14 @@ DoodleImage.inheritsFrom(Drawable);
 DoodleImage.prototype.draw = function (context) {
     // draw code here
     context.save();
-    console.log("I start drawing" + this.img.src);
+    // console.log("I start drawing" + this.img.src);
     context.translate(this.left, this.top);
     context.rotate(this.theta);
     context.scale(this.scale, this.scale);
     context.beginPath();
     if (this.width >= 0 && this.height >= 0) {
         context.drawImage(this.img, 0, 0, this.width, this.height);
-        console.log("I finish drawing");
+        // console.log("I finish drawing");
     } else {
         context.drawImage(this.img, 0, 0);
     }
@@ -310,7 +309,6 @@ Container.prototype.draw = function (context) {
     context.lineTo(0,this.height);
     context.lineTo(0,0);
     context.closePath();
-    
     if (this.fill != false) {
         context.fillStyle = this.fill;
         context.fill();
@@ -321,7 +319,14 @@ Container.prototype.draw = function (context) {
         context.stroke();
     }
     context.clip();
-    
+    this.layout(context);
+    context.restore();        
+};
+
+//Rest of container methods here
+
+//layout Performs layout on the children objects before it draws them.
+Container.prototype.layout = function (context) {
     // draw visible children here
     for(var i=0; i<this.children.length; i++){
         var child = this.children[i];
@@ -331,15 +336,6 @@ Container.prototype.draw = function (context) {
             context.restore();
         }
     }
-    context.restore();        
-    
- 
-};
-
-//Rest of container methods here
-
-//layout Performs layout on the children objects before it draws them.
-Container.prototype.layout = function (context) {
 }
 
 //getWidth Return the width of the container
@@ -354,23 +350,102 @@ Container.prototype.getHeight = function () {
 
 //Places all of its children at its own top-left corner.
 function Pile(attrs) {
-  Container.call(this, attrs);   
-  //Rest of constructor code here
+    Container.call(this, attrs);   
+    //Rest of constructor code here
+    this.children = [];
+    this.width = attrs.width;
+    this.height = attrs.height;
+    this.fill = attrs.fill;
+    this.borderColor = attrs.borderColor;
+    this.borderWidth = attrs.borderWidth;
+    this.left = 0;
+    this.top = 0
 }
 Pile.inheritsFrom(Container);
 
 //Rest of pile methods here
+Pile.prototype.draw = function (context) {
+
+}
+
+Pile.prototype.layout = function (context) {
+
+}
+
+Pile.prototype.getWidth = function (context) {
+
+}
+
+Pile.prototype.getHeight = function (context) {
+
+}
 
 //Places its children in a single horizontal row with the children vertically centered. 
 //If the children do not fit within the bounds of the row object 
 //they are clipped at the right edge.
 function Row(attrs) {
-  Container.call(this, attrs);    
-  //Rest of constructor code here
+    Container.call(this, attrs);    
+    //Rest of constructor code here
 }
 Row.inheritsFrom(Container);
 
 //Rest of row methods here
+Row.prototype.draw = function (context) {
+    // draw code here
+    context.save();
+    // make transformation, rotation and scaling
+    context.translate(this.left, this.top);
+    context.rotate(this.theta);
+    context.scale(this.scale, this.scale);
+    // draw container
+    context.beginPath();
+    context.moveTo(0,0);
+    context.lineTo(this.width,0);
+    context.lineTo(this.width,this.height);
+    context.lineTo(0,this.height);
+    context.lineTo(0,0);
+    context.closePath();
+    if (this.fill != false) {
+        context.fillStyle = this.fill;
+        context.fill();
+    }
+    if (this.borderWidth != 0) {
+        context.strokeStyle = this.borderColor;
+        context.lineWidth = this.borderWidth;
+        context.stroke();
+    }
+    context.clip();
+    this.layout(context);
+    context.restore();    
+}
+
+Row.prototype.layout = function (context) {
+    // draw visible children here
+    var left = 0;
+    var middle = this.getHeight(context)/2;
+    var nextLeft = 0;
+    for(var i=0; i<this.children.length; i++){
+        var child = this.children[i];
+        // determine the positions for the child
+        child.left = left;
+        nextLeft = left + child.getWidth(child.context);
+        left = nextLeft;
+        child.top = middle - child.getHeight(child.context)/2;
+        if (child.visible) {
+            context.save();
+            child.draw(context);
+            context.restore();
+        }
+    }
+}
+
+Row.prototype.getWidth = function (context) {
+    return this.width;
+}
+
+Row.prototype.getHeight = function (context) {
+    return this.height;
+}
 
 function Column(attrs) {
   Container.call(this, attrs);  
@@ -378,8 +453,67 @@ function Column(attrs) {
 }
 Column.inheritsFrom(Container);
 
-//Rest of column methods here
+// Rest of column methods here
+Column.prototype.draw = function (context) {
+    // draw code here
+    context.save();
+    // make transformation, rotation and scaling
+    context.translate(this.left, this.top);
+    context.rotate(this.theta);
+    context.scale(this.scale, this.scale);
+    // draw container
+    context.beginPath();
+    context.moveTo(0,0);
+    context.lineTo(this.width,0);
+    context.lineTo(this.width,this.height);
+    context.lineTo(0,this.height);
+    context.lineTo(0,0);
+    context.closePath();
+    if (this.fill != false) {
+        context.fillStyle = this.fill;
+        context.fill();
+    }
+    if (this.borderWidth != 0) {
+        context.strokeStyle = this.borderColor;
+        context.lineWidth = this.borderWidth;
+        context.stroke();
+    }
+    context.clip();
+    this.layout(context);
+    context.restore();    
+}
 
+Column.prototype.layout = function (context) {
+    // draw visible children here
+    var top = 0;
+    var middle = this.width/2;
+    var nextTop = 0;
+    for(var i=0; i<this.children.length; i++){
+        var child = this.children[i];
+        // determine the positions for the child
+        child.top = top;
+        nextTop = top + child.getHeight(child.context);
+        top = nextTop;
+        child.left = middle - child.getWidth(child.context)/2;
+        if (child.visible) {
+            context.save();
+            child.draw(context);
+            context.restore();
+        }
+    }
+}
+
+Column.prototype.getWidth = function (context) {
+    return this.width;
+}
+
+Column.prototype.getHeight = function (context) {
+    return this.height;
+}
+
+// Places its children so that their centers (not top-left corners) lie positioned at equal angles around a circular perimeter of a given size. 
+
+// So for example, if there were five child objects they would be placed every 360/5 = 72°. Or if there were four child objects, their centers would be positioned 90° apart, i.e., at the four compass points. Note that this layout ignores any overlap that might occur between children, simply calculating their locations and drawing them there in the order found in the child list.
 function Circle(attrs) {
   Container.call(this, attrs);      
   var dflt = {
@@ -389,18 +523,120 @@ function Circle(attrs) {
   };
   attrs = mergeWithDefault(attrs, dflt);
   //Rest of constructor code here
+  this.layoutCenterX = attrs.layoutCenterX;
+  this.layoutCenterY = attrs.layoutCenterY;
+  this.layoutRadius = attrs.layoutRadius;
 }
 Circle.inheritsFrom(Container);
 
 //Rest of circle methods here
+Circle.prototype.draw = function(context) {
+    context.save();
+    context.translate(this.left,this.top);
+    context.rotate(this.theta);
+    context.scale(this.scale,this.scale);
 
+    context.beginPath();
+    context.arc(this.layoutCenterX,this.layoutCenterY,this.layoutRadius, 0, 2 * Math.PI);
+    if (this.lineWidth) {
+        context.strokeStyle = this.color;
+        context.lineWidth = this.lineWidth;
+        context.stroke();
+    }
+    if (this.fill) {
+        context.fillStyle = this.fill;
+        context.fill();
+    }
+    context.closePath();
+
+    context.clip();
+    this.layout(context);
+    context.restore();  
+}
+
+Circle.prototype.layout = function (context) {
+    // draw visible children here
+    var num_of_children = this.children.length;
+    var angle = 2 * Math.PI / num_of_children;
+    for(var i=0; i<this.children.length; i++){
+        var child = this.children[i];
+        var childWidth = child.getWidth(child.context)+child.borderWidth*2;
+        var childHeight = child.getHeight(child.context)+child.borderWidth*2;
+        var radius = this.layoutRadius - Math.sqrt( childWidth*childWidth + childHeight*childHeight)/2
+        // determine the positions for the child
+        child.top = this.layoutCenterY - Math.sin(i * angle) * radius - child.getHeight(child.context)/2- child.borderWidth;
+        child.left = this.layoutCenterX - Math.cos(i * angle) * radius - child.getWidth(child.context)/2 -child.borderWidth ;
+        if (child.visible) {
+            context.save();
+            child.draw(context);
+            context.restore();
+        }
+    }    
+}
+
+Circle.prototype.getWidth = function (context) {
+    return this.layoutRadius;
+}
+
+Circle.prototype.getHeight = function (context) {
+    return this.layoutRadius;
+}
+
+// Applies additional clipping to all its children in the form of an oval which fits just inside its defined bounding box.
 function OvalClip(attrs) {
   Container.call(this, attrs);
   //Rest of constructor code here
+  this.top = attrs.top;
+  this.left = attrs.left;
+  this.height = attrs.height;
+  this.width = attrs.width;
+  this.borderWidth = attrs.borderWidth;
 }
 OvalClip.inheritsFrom(Container);
 
 //Rest of ovalClip methods here
+OvalClip.prototype.draw = function(context) {
+    context.save();
+    context.translate(this.left,this.top);
+    context.rotate(this.theta);
+    context.scale(this.scale,this.scale);
+
+    context.beginPath();
+    context.ellipse(this.width/2, this.height/2, this.width/2, this.height/2, 2*Math.PI, 0, 2*Math.PI, true);
+    if (this.borderWidth) {
+        context.strokeStyle = this.color;
+        context.lineWidth = this.borderWidth;
+        context.stroke();
+    }
+    context.closePath();
+
+    context.clip();
+    this.layout(context);
+    context.restore();  
+}
+
+OvalClip.prototype.layout = function (context) {
+    // draw visible children here
+    for(var i=0; i<this.children.length; i++){
+        var child = this.children[i];
+        if (child.visible) {
+            context.save();
+            child.draw(context);
+            context.restore();
+        }
+    }
+}
+
+//getWidth Return the width of the container
+OvalClip.prototype.getWidth = function (context) {
+    return this.width;
+}
+
+//getHeight Return the height of the container
+OvalClip.prototype.getHeight = function (context) {
+    return this.height;
+}
+
 
 /**
  * Measurement function to measure canvas fonts
