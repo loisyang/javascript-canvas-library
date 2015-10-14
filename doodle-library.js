@@ -129,7 +129,7 @@ Text.prototype.draw = function (context) {
     context.font = this.size + "pt"+" "+this.font;
     context.fillStyle = this.fill;
     if (this.bold) { context.style.bold;}
-    context.fillText(this.content, 0, this.height);
+    context.fillText(this.content, 0, this.getHeight(context));
     context.closePath();
 
 };
@@ -137,12 +137,14 @@ Text.prototype.draw = function (context) {
 //getWidth Return the width of the text (use the MeasureText helper method provided)
 Text.prototype.getWidth = function (context) {
     var textMeasure = MeasureText(this.content, this.bold, this.font, this.size);
+    console.log("width: "+textMeasure[0]);
     return textMeasure[0];
 }
 
 //getHeight Return the height of the text (use the MeasureText helper method provided)
 Text.prototype.getHeight = function (context) {
     var textMeasure = MeasureText(this.content, this.bold, this.font, this.size);
+    console.log("height: "+textMeasure[1]);
     return textMeasure[1];
 }
 
@@ -298,7 +300,8 @@ Container.prototype.draw = function (context) {
     // draw code here
     context.save();
     // make transformation, rotation and scaling
-    context.translate(this.left, this.top);
+    // context.translate(this.left, this.top);
+    context.translate(this.left+this.borderWidth, this.top+this.borderWidth);
     context.rotate(this.theta);
     context.scale(this.scale, this.scale);
     // draw container
@@ -309,14 +312,16 @@ Container.prototype.draw = function (context) {
     context.lineTo(0,this.height);
     context.lineTo(0,0);
     context.closePath();
-    if (this.fill != false) {
-        context.fillStyle = this.fill;
-        context.fill();
-    }
+
     if (this.borderWidth != 0) {
         context.strokeStyle = this.borderColor;
         context.lineWidth = this.borderWidth;
         context.stroke();
+    }
+
+    if (this.fill != false) {
+        context.fillStyle = this.fill;
+        context.fill();
     }
     context.clip();
     this.layout(context);
@@ -352,32 +357,59 @@ Container.prototype.getHeight = function () {
 function Pile(attrs) {
     Container.call(this, attrs);   
     //Rest of constructor code here
-    this.children = [];
-    this.width = attrs.width;
-    this.height = attrs.height;
-    this.fill = attrs.fill;
-    this.borderColor = attrs.borderColor;
-    this.borderWidth = attrs.borderWidth;
-    this.left = 0;
-    this.top = 0
 }
 Pile.inheritsFrom(Container);
 
 //Rest of pile methods here
 Pile.prototype.draw = function (context) {
-
+    // draw code here
+    context.save();
+    // make transformation, rotation and scaling
+    context.translate(this.left, this.top);
+    context.rotate(this.theta);
+    context.scale(this.scale, this.scale);
+    // draw container
+    context.beginPath();
+    context.moveTo(0,0);
+    context.lineTo(this.width,0);
+    context.lineTo(this.width,this.height);
+    context.lineTo(0,this.height);
+    context.lineTo(0,0);
+    context.closePath();
+    if (this.fill != false) {
+        context.fillStyle = this.fill;
+        context.fill();
+    }
+    if (this.borderWidth != 0) {
+        context.strokeStyle = this.borderColor;
+        context.lineWidth = this.borderWidth;
+        context.stroke();
+    }
+    context.clip();
+    this.layout(context);
+    context.restore();    
 }
 
 Pile.prototype.layout = function (context) {
-
+    // draw visible children here
+    for(var i=0; i<this.children.length; i++){
+        var child = this.children[i];
+        child.top = 0 ;
+        child.left = 0;
+        if (child.visible) {
+            context.save();
+            child.draw(context);
+            context.restore();
+        }
+    }
 }
 
 Pile.prototype.getWidth = function (context) {
-
+    return this.width;
 }
 
 Pile.prototype.getHeight = function (context) {
-
+    return this.height;
 }
 
 //Places its children in a single horizontal row with the children vertically centered. 
@@ -428,9 +460,10 @@ Row.prototype.layout = function (context) {
         var child = this.children[i];
         // determine the positions for the child
         child.left = left;
-        nextLeft = left + child.getWidth(child.context);
+        nextLeft = left + child.getWidth(child.context)+ child.borderWidth;
         left = nextLeft;
         child.top = middle - child.getHeight(child.context)/2;
+        console.log(child + ", "+child.top + ", "+child.left);
         if (child.visible) {
             context.save();
             child.draw(context);
@@ -487,12 +520,12 @@ Column.prototype.layout = function (context) {
     // draw visible children here
     var top = 0;
     var middle = this.width/2;
-    var nextTop = 0;
+    var nextTop = top;
     for(var i=0; i<this.children.length; i++){
         var child = this.children[i];
         // determine the positions for the child
         child.top = top;
-        nextTop = top + child.getHeight(child.context);
+        nextTop = top + child.getHeight(child.context) + child.borderWidth;
         top = nextTop;
         child.left = middle - child.getWidth(child.context)/2;
         if (child.visible) {
@@ -549,7 +582,7 @@ Circle.prototype.draw = function(context) {
     }
     context.closePath();
 
-    context.clip();
+    // context.clip();
     this.layout(context);
     context.restore();  
 }
@@ -562,8 +595,13 @@ Circle.prototype.layout = function (context) {
         var child = this.children[i];
         var childWidth = child.getWidth(child.context)+child.borderWidth*2;
         var childHeight = child.getHeight(child.context)+child.borderWidth*2;
-        var radius = this.layoutRadius - Math.sqrt( childWidth*childWidth + childHeight*childHeight)/2
+        var radius = this.layoutRadius
+        // if the children should only be placed within the circle:
+        // var radius = this.layoutRadius - Math.sqrt( childWidth*childWidth + childHeight*childHeight)/2
         // determine the positions for the child
+
+        // child.top = this.layoutCenterY - Math.sin(i * angle) * radius - child.getHeight(child.context)/2- child.borderWidth;
+        // child.left = this.layoutCenterX - Math.cos(i * angle) * radius - child.getWidth(child.context)/2 -child.borderWidth ;
         child.top = this.layoutCenterY - Math.sin(i * angle) * radius - child.getHeight(child.context)/2- child.borderWidth;
         child.left = this.layoutCenterX - Math.cos(i * angle) * radius - child.getWidth(child.context)/2 -child.borderWidth ;
         if (child.visible) {

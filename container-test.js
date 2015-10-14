@@ -173,8 +173,8 @@ window.onload = function () {
       });
         circle.children.push(newRot);
     }
-    root.children = [rotContainer1, multiRotContainer,imgFrameFrame,row,column,circle];
-    root.draw();
+    // root.children = [rotContainer1, multiRotContainer,imgFrameFrame,row,column,circle];
+    // root.draw();
  
     var oval = new OvalClip({ 
         width: 200,
