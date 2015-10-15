@@ -685,44 +685,45 @@ OvalClip.prototype.getHeight = function (context) {
     return this.height;
 }
 
+function Rectangle(attrs) {
+    var dflt = {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+    };
+    attrs = mergeWithDefault(attrs, dflt);
+    Primitive.call(this, attrs);
+    // rest of constructor code here
+    this.x = attrs.x;
+    this.y = attrs.y;
+    this.width = attrs.width;
+    this.height = attrs.height;
+}
+Rectangle.inheritsFrom(Primitive);
+
 
 function AnimatedDoodle(attrs) {
-  Container.call(this, attrs);  
-  //Rest of constructor code here
+    var dflt = {
+        startX: 0,
+        startY: 0,
+        width: 0,
+        height: 0,
+    };
+    attrs = mergeWithDefault(attrs, dflt);
+    Container.call(this, attrs);  
+    //Rest of constructor code here
+    this.startX = attrs.startX;
+    this.startY = attrs.startY;
 }
 AnimatedDoodle.inheritsFrom(Container);
 
 //Rest of column methods here
 AnimatedDoodle.prototype.draw = function (context) {
-
-// draw code here
     context.save();
-    // make transformation, rotation and scaling
-    // context.translate(this.left, this.top);
-    // context.rotate(this.theta);
-    // context.scale(this.scale, this.scale);
-    // draw container
-    context.beginPath();
-    context.moveTo(0,0);
-    context.lineTo(this.width,0);
-    context.lineTo(this.width,this.height);
-    context.lineTo(0,this.height);
-    context.lineTo(0,0);
-    context.closePath();
-    if (this.borderWidth != 0) {
-        context.strokeStyle = this.borderColor;
-        context.lineWidth = this.borderWidth;
-        context.stroke();
-    }
-    if (this.fill != false) {
-        context.fillStyle = this.fill;
-        context.fill();
-    }
-    context.clip();
     this.layout(context);
     context.restore();
-
-
+    
 }
 
 AnimatedDoodle.prototype.layout = function(context) { 
@@ -730,25 +731,17 @@ AnimatedDoodle.prototype.layout = function(context) {
         HalfPI = Math.PI / 2,
         count = 80,
         sizeBase = 0.1,
-        sizeDiv = 10,
+        sizeDiv = 8,
         tick = 0,
-        width = this.width,
-        height = this.height,
-        cx = width / 2,
-        cy = height / 2,
         self = this;
-        
-    ctx.translate(cx, cy);
 
-    (function loop() {
-        var left = self.left/2,
-            top = self.top/2;
+    (function loop() {        
         requestAnimationFrame( loop );  
-        ctx.clearRect( -this.width / 2, -this.height / 2, this.width, this.height );
-        // ctx.fillStyle = 'white';  
+        ctx.clearRect( self.startX-this.width/4, self.startY-this.width/4, this.width/2, this.width/2 );
+        ctx.fillStyle = 'white';  
         var angle = tick / 8,
-          radius = -50 + Math.sin( tick / 15 ) * 100,
-          size;
+            radius = -60 + Math.sin( tick / 15 ) * 100,
+            size;
 
         for( var i = 0; i < count; i++ ) {
             angle += Math.PI / 64;
@@ -756,25 +749,24 @@ AnimatedDoodle.prototype.layout = function(context) {
             size = sizeBase + i / sizeDiv;
 
             ctx.beginPath();
-            ctx.arc( Math.cos( angle ) * radius , Math.sin( angle ) * radius + top, size, 0, Math.PI *2, false );
+            ctx.arc( (Math.cos( angle ) * radius) + self.startX, (Math.sin( angle ) * radius) + self.startY, size, 0, Math.PI * 2, false );
             ctx.fillStyle = '#4285F4';
             ctx.fill();
-            ctx.closePath();
 
             ctx.beginPath();
-            ctx.arc( Math.cos( angle ) * -radius, Math.sin( angle ) * -radius, size, 0, Math.PI *2, false );
+            ctx.arc( (Math.cos( angle ) * -radius) + self.startX, (Math.sin( angle ) * -radius) + self.startY, size, 0, Math.PI *2, false );
             ctx.fillStyle = '#EA4335';
             ctx.fill();
             ctx.closePath();
 
             ctx.beginPath();
-            ctx.arc( Math.cos( angle + HalfPI ) * radius, Math.sin( angle + HalfPI ) * radius, size, 0, Math.PI *2, false );
+            ctx.arc( (Math.cos( angle + HalfPI ) * radius) + self.startX, (Math.sin( angle + HalfPI ) * radius) + self.startY, size, 0, Math.PI *2, false );
             ctx.fillStyle = '#FBBC05';
             ctx.fill();
             ctx.closePath();
 
             ctx.beginPath();
-            ctx.arc( Math.cos( angle + HalfPI ) * -radius, Math.sin( angle + HalfPI ) * -radius, size, 0, Math.PI *2 );
+            ctx.arc( (Math.cos( angle + HalfPI ) * -radius) + self.startX, (Math.sin( angle + HalfPI ) * -radius) + self.startY, size, 0, Math.PI *2 );
             ctx.fillStyle = '#34A853';
             ctx.fill();
             ctx.closePath();
@@ -782,6 +774,7 @@ AnimatedDoodle.prototype.layout = function(context) {
 
         tick++;
     })()
+    ctx.restore();
 };
 
 /**
