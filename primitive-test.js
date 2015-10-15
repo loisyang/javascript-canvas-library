@@ -60,8 +60,8 @@ window.onload = function () {
   doodle.children.push(s2line2);
   doodle.children.push(s2line3);
   var rect = new Rectangle({
-    x: 300,
-    y: 100,
+    left: 300,
+    top: 100,
     width: 90,
     height: 100,
     color: "orange",
@@ -188,7 +188,7 @@ window.onload = function () {
   }
 
   // Write some text.
-  var text = new Text({ left: 360, height: 440, content: "Om nom nom" });
+  var text = new Text({ left: 360, top: 440, content: "Om nom nom", bold:true });
 
   doodle.children.push(text);
   

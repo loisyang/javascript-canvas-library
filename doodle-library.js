@@ -114,7 +114,6 @@ function Text(attrs) {
     this.content = attrs.content;
     this.fill = attrs.fill;
     this.font = attrs.font;
-    this.height = attrs.height;
     this.size = attrs.size;
     this.bold = attrs.bold;
 }
@@ -126,9 +125,12 @@ Text.prototype.draw = function (context) {
     context.rotate(this.theta);
     context.scale(this.scale, this.scale);
     context.beginPath();
-    context.font = this.size + "pt"+" "+this.font;
+    if (this.bold) { 
+        context.font = "bold" + " " + this.size + "pt"+" "+this.font;
+    } else {
+        context.font = this.size + "pt"+" "+this.font;
+    }
     context.fillStyle = this.fill;
-    if (this.bold) { context.style.bold;}
     context.fillText(this.content, 0, this.getHeight(context));
     context.closePath();
 
@@ -137,14 +139,14 @@ Text.prototype.draw = function (context) {
 //getWidth Return the width of the text (use the MeasureText helper method provided)
 Text.prototype.getWidth = function (context) {
     var textMeasure = MeasureText(this.content, this.bold, this.font, this.size);
-    console.log("width: "+textMeasure[0]);
+    // console.log("width: "+textMeasure[0]);
     return textMeasure[0];
 }
 
 //getHeight Return the height of the text (use the MeasureText helper method provided)
 Text.prototype.getHeight = function (context) {
     var textMeasure = MeasureText(this.content, this.bold, this.font, this.size);
-    console.log("height: "+textMeasure[1]);
+    // console.log("height: "+textMeasure[1]);
     return textMeasure[1];
 }
 
@@ -162,6 +164,8 @@ function DoodleImage(attrs) {
     this.height = attrs.height;
     this.img = new Image();
     this.img.src = this.src
+
+    // make sure all images are loaded before containers start drawing themselves.
     num_of_image++;
     this.img.onload = function() {
         num_onload++;
@@ -172,14 +176,12 @@ DoodleImage.inheritsFrom(Drawable);
 DoodleImage.prototype.draw = function (context) {
     // draw code here
     context.save();
-    // console.log("I start drawing" + this.img.src);
     context.translate(this.left, this.top);
     context.rotate(this.theta);
     context.scale(this.scale, this.scale);
     context.beginPath();
     if (this.width >= 0 && this.height >= 0) {
         context.drawImage(this.img, 0, 0, this.width, this.height);
-        // console.log("I finish drawing");
     } else {
         context.drawImage(this.img, 0, 0);
     }
@@ -216,6 +218,7 @@ Line.prototype.draw = function (context) {
     // your draw code here
     context.translate(this.left, this.top);
     context.rotate(this.theta);
+    context.scale(this.scale, this.scale);
     context.beginPath();
     context.lineWidth = this.lineWidth;
     context.strokeStyle = this.color;
@@ -254,6 +257,7 @@ Rectangle.prototype.draw = function (context) {
     // draw code here
     context.translate(this.left, this.top);
     context.rotate(this.theta);
+    context.scale(this.scale, this.scale);
     context.beginPath();
     context.rect(this.x, this.y, this.width, this.height);
     if (this.lineWidth > 0) {
@@ -299,11 +303,10 @@ Container.inheritsFrom(Drawable);
 Container.prototype.draw = function (context) {
     // draw code here
     context.save();
-    // make transformation, rotation and scaling
-    // context.translate(this.left, this.top);
-    context.translate(this.left+this.borderWidth, this.top+this.borderWidth);
+    context.translate(this.left, this.top);
     context.rotate(this.theta);
     context.scale(this.scale, this.scale);
+
     // draw container
     context.beginPath();
     context.moveTo(0,0);
@@ -323,6 +326,7 @@ Container.prototype.draw = function (context) {
         context.fillStyle = this.fill;
         context.fill();
     }
+
     context.clip();
     this.layout(context);
     context.restore();        
@@ -376,14 +380,15 @@ Pile.prototype.draw = function (context) {
     context.lineTo(0,this.height);
     context.lineTo(0,0);
     context.closePath();
-    if (this.fill != false) {
-        context.fillStyle = this.fill;
-        context.fill();
-    }
+
     if (this.borderWidth != 0) {
         context.strokeStyle = this.borderColor;
         context.lineWidth = this.borderWidth;
         context.stroke();
+    }
+    if (this.fill != false) {
+        context.fillStyle = this.fill;
+        context.fill();
     }
     context.clip();
     this.layout(context);
@@ -394,7 +399,7 @@ Pile.prototype.layout = function (context) {
     // draw visible children here
     for(var i=0; i<this.children.length; i++){
         var child = this.children[i];
-        child.top = 0 ;
+        child.top = 0;
         child.left = 0;
         if (child.visible) {
             context.save();
@@ -437,14 +442,14 @@ Row.prototype.draw = function (context) {
     context.lineTo(0,this.height);
     context.lineTo(0,0);
     context.closePath();
-    if (this.fill != false) {
-        context.fillStyle = this.fill;
-        context.fill();
-    }
     if (this.borderWidth != 0) {
         context.strokeStyle = this.borderColor;
         context.lineWidth = this.borderWidth;
         context.stroke();
+    }
+    if (this.fill != false) {
+        context.fillStyle = this.fill;
+        context.fill();
     }
     context.clip();
     this.layout(context);
@@ -460,9 +465,9 @@ Row.prototype.layout = function (context) {
         var child = this.children[i];
         // determine the positions for the child
         child.left = left;
-        nextLeft = left + child.getWidth(child.context)+ child.borderWidth;
+        nextLeft = left + child.getWidth(context)+ child.borderWidth;
         left = nextLeft;
-        child.top = middle - child.getHeight(child.context)/2;
+        child.top = middle - child.getHeight(context)/2;
         console.log(child + ", "+child.top + ", "+child.left);
         if (child.visible) {
             context.save();
@@ -502,14 +507,14 @@ Column.prototype.draw = function (context) {
     context.lineTo(0,this.height);
     context.lineTo(0,0);
     context.closePath();
-    if (this.fill != false) {
-        context.fillStyle = this.fill;
-        context.fill();
-    }
     if (this.borderWidth != 0) {
         context.strokeStyle = this.borderColor;
         context.lineWidth = this.borderWidth;
         context.stroke();
+    }
+    if (this.fill != false) {
+        context.fillStyle = this.fill;
+        context.fill();
     }
     context.clip();
     this.layout(context);
@@ -523,11 +528,10 @@ Column.prototype.layout = function (context) {
     var nextTop = top;
     for(var i=0; i<this.children.length; i++){
         var child = this.children[i];
-        // determine the positions for the child
         child.top = top;
-        nextTop = top + child.getHeight(child.context) + child.borderWidth;
+        nextTop = top + child.getHeight(context) + child.borderWidth;
         top = nextTop;
-        child.left = middle - child.getWidth(child.context)/2;
+        child.left = middle - child.getWidth(context)/2;
         if (child.visible) {
             context.save();
             child.draw(context);
@@ -589,21 +593,23 @@ Circle.prototype.draw = function(context) {
 
 Circle.prototype.layout = function (context) {
     // draw visible children here
+
     var num_of_children = this.children.length;
     var angle = 2 * Math.PI / num_of_children;
     for(var i=0; i<this.children.length; i++){
         var child = this.children[i];
-        var childWidth = child.getWidth(child.context)+child.borderWidth*2;
-        var childHeight = child.getHeight(child.context)+child.borderWidth*2;
+        var childWidth = child.getWidth(context)+child.borderWidth*2;
+        var childHeight = child.getHeight(context)+child.borderWidth*2;
         var radius = this.layoutRadius
+
         // if the children should only be placed within the circle:
         // var radius = this.layoutRadius - Math.sqrt( childWidth*childWidth + childHeight*childHeight)/2
         // determine the positions for the child
+        // child.top = this.layoutCenterY - Math.sin(i * angle) * radius - child.getHeight(context)/2- child.borderWidth;
+        // child.left = this.layoutCenterX - Math.cos(i * angle) * radius - child.getWidth(context)/2 -child.borderWidth ;
 
-        // child.top = this.layoutCenterY - Math.sin(i * angle) * radius - child.getHeight(child.context)/2- child.borderWidth;
-        // child.left = this.layoutCenterX - Math.cos(i * angle) * radius - child.getWidth(child.context)/2 -child.borderWidth ;
-        child.top = this.layoutCenterY - Math.sin(i * angle) * radius - child.getHeight(child.context)/2- child.borderWidth;
-        child.left = this.layoutCenterX - Math.cos(i * angle) * radius - child.getWidth(child.context)/2 -child.borderWidth ;
+        child.top = this.layoutCenterY - Math.sin(i * angle) * radius - child.getHeight(context)/2- child.borderWidth;
+        child.left = this.layoutCenterX - Math.cos(i * angle) * radius - child.getWidth(context)/2 -child.borderWidth ;
         if (child.visible) {
             context.save();
             child.draw(context);
@@ -646,6 +652,10 @@ OvalClip.prototype.draw = function(context) {
         context.lineWidth = this.borderWidth;
         context.stroke();
     }
+    if (this.fill) {
+        context.fillStyle = this.fill;
+        context.fill();
+    }
     context.closePath();
 
     context.clip();
@@ -675,6 +685,104 @@ OvalClip.prototype.getHeight = function (context) {
     return this.height;
 }
 
+
+function AnimatedDoodle(attrs) {
+  Container.call(this, attrs);  
+  //Rest of constructor code here
+}
+AnimatedDoodle.inheritsFrom(Container);
+
+//Rest of column methods here
+AnimatedDoodle.prototype.draw = function (context) {
+
+// draw code here
+    context.save();
+    // make transformation, rotation and scaling
+    // context.translate(this.left, this.top);
+    // context.rotate(this.theta);
+    // context.scale(this.scale, this.scale);
+    // draw container
+    context.beginPath();
+    context.moveTo(0,0);
+    context.lineTo(this.width,0);
+    context.lineTo(this.width,this.height);
+    context.lineTo(0,this.height);
+    context.lineTo(0,0);
+    context.closePath();
+    if (this.borderWidth != 0) {
+        context.strokeStyle = this.borderColor;
+        context.lineWidth = this.borderWidth;
+        context.stroke();
+    }
+    if (this.fill != false) {
+        context.fillStyle = this.fill;
+        context.fill();
+    }
+    context.clip();
+    this.layout(context);
+    context.restore();
+
+
+}
+
+AnimatedDoodle.prototype.layout = function(context) { 
+    var ctx = context,
+        HalfPI = Math.PI / 2,
+        count = 80,
+        sizeBase = 0.1,
+        sizeDiv = 10,
+        tick = 0,
+        width = this.width,
+        height = this.height,
+        cx = width / 2,
+        cy = height / 2,
+        self = this;
+        
+    ctx.translate(cx, cy);
+
+    (function loop() {
+        var left = self.left/2,
+            top = self.top/2;
+        requestAnimationFrame( loop );  
+        ctx.clearRect( -this.width / 2, -this.height / 2, this.width, this.height );
+        // ctx.fillStyle = 'white';  
+        var angle = tick / 8,
+          radius = -50 + Math.sin( tick / 15 ) * 100,
+          size;
+
+        for( var i = 0; i < count; i++ ) {
+            angle += Math.PI / 64;
+            radius += i / 30;
+            size = sizeBase + i / sizeDiv;
+
+            ctx.beginPath();
+            ctx.arc( Math.cos( angle ) * radius , Math.sin( angle ) * radius + top, size, 0, Math.PI *2, false );
+            ctx.fillStyle = '#4285F4';
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.arc( Math.cos( angle ) * -radius, Math.sin( angle ) * -radius, size, 0, Math.PI *2, false );
+            ctx.fillStyle = '#EA4335';
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.arc( Math.cos( angle + HalfPI ) * radius, Math.sin( angle + HalfPI ) * radius, size, 0, Math.PI *2, false );
+            ctx.fillStyle = '#FBBC05';
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.arc( Math.cos( angle + HalfPI ) * -radius, Math.sin( angle + HalfPI ) * -radius, size, 0, Math.PI *2 );
+            ctx.fillStyle = '#34A853';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        tick++;
+    })()
+};
 
 /**
  * Measurement function to measure canvas fonts

@@ -115,7 +115,7 @@ window.onload = function () {
       });
       item3.children.push( new Text({  left: 10, height: 17, fill: "white", content: "3" }));
       row.children.push(item3);     
-      row.children.push(new Text({ left: 360, top: 440, content: "Om nom nom" }));
+      row.children.push(new Text({ left: 360, top: 440, content: "Om nom nom", bold: true}));
     })()
 
     var column = new Column({ 
@@ -173,8 +173,6 @@ window.onload = function () {
       });
         circle.children.push(newRot);
     }
-    // root.children = [rotContainer1, multiRotContainer,imgFrameFrame,row,column,circle];
-    // root.draw();
  
     var oval = new OvalClip({ 
         width: 200,
