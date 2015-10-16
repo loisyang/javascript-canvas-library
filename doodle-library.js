@@ -711,71 +711,70 @@ function AnimatedDoodle(attrs) {
         height: 0,
     };
     attrs = mergeWithDefault(attrs, dflt);
-    Container.call(this, attrs);  
-    //Rest of constructor code here
+    Drawable.call(this, attrs);  
     this.startX = attrs.startX;
     this.startY = attrs.startY;
 }
-AnimatedDoodle.inheritsFrom(Container);
+AnimatedDoodle.inheritsFrom(Drawable);
 
-//Rest of column methods here
 AnimatedDoodle.prototype.draw = function (context) {
-    context.save();
-    this.layout(context);
-    context.restore();
-    
-}
+    var ctx = context;
+    var self = this;
+    var count = 80;
+    var distanceBase = 0.1;
+    var distanceIncr = 8;
+    var tick = 0;
 
-AnimatedDoodle.prototype.layout = function(context) { 
-    var ctx = context,
-        HalfPI = Math.PI / 2,
-        count = 80,
-        sizeBase = 0.1,
-        sizeDiv = 8,
-        tick = 0,
-        self = this;
-
+    ctx.save();
     (function loop() {        
         requestAnimationFrame( loop );  
         ctx.clearRect( self.startX-this.width/4, self.startY-this.width/4, this.width/2, this.width/2 );
-        ctx.fillStyle = 'white';  
-        var angle = tick / 8,
-            radius = -60 + Math.sin( tick / 15 ) * 100,
-            size;
+
+        var angle = tick / 8;
+        var radius = -60 + Math.sin( tick / 15 ) * 100;
+        var distance;
 
         for( var i = 0; i < count; i++ ) {
             angle += Math.PI / 64;
             radius += i / 30;
-            size = sizeBase + i / sizeDiv;
+            distance = distanceBase + i / distanceIncr;
 
+            // draw four spinning arcs 
+            // 1st: blue for "G" and "g"
             ctx.beginPath();
-            ctx.arc( (Math.cos( angle ) * radius) + self.startX, (Math.sin( angle ) * radius) + self.startY, size, 0, Math.PI * 2, false );
+            ctx.arc( (Math.cos( angle ) * radius) + self.startX, (Math.sin( angle ) * radius) + self.startY, distance, 0, Math.PI * 2, false );
             ctx.fillStyle = '#4285F4';
             ctx.fill();
+            ctx.closePath();
 
+            // 2nd: red #EA4335 for "o" and "e"
             ctx.beginPath();
-            ctx.arc( (Math.cos( angle ) * -radius) + self.startX, (Math.sin( angle ) * -radius) + self.startY, size, 0, Math.PI *2, false );
+            ctx.arc( (Math.cos( angle ) * -radius) + self.startX, (Math.sin( angle ) * -radius) + self.startY, distance, 0, Math.PI *2, false );
             ctx.fillStyle = '#EA4335';
             ctx.fill();
             ctx.closePath();
 
+            // 3rd: green #34A853 for "l"
             ctx.beginPath();
-            ctx.arc( (Math.cos( angle + HalfPI ) * radius) + self.startX, (Math.sin( angle + HalfPI ) * radius) + self.startY, size, 0, Math.PI *2, false );
+            ctx.arc( (Math.cos( angle + Math.PI / 2 ) * -radius) + self.startX, (Math.sin( angle + Math.PI / 2 ) * -radius) + self.startY, distance, 0, Math.PI *2 );
+            ctx.fillStyle = '#34A853';
+            ctx.fill();
+            ctx.closePath();
+
+            // 4th: yellow #FBBC05 for "o"
+            ctx.beginPath();
+            ctx.arc( (Math.cos( angle + Math.PI / 2 ) * radius) + self.startX, (Math.sin( angle + Math.PI / 2 ) * radius) + self.startY, distance, 0, Math.PI *2, false );
             ctx.fillStyle = '#FBBC05';
             ctx.fill();
             ctx.closePath();
 
-            ctx.beginPath();
-            ctx.arc( (Math.cos( angle + HalfPI ) * -radius) + self.startX, (Math.sin( angle + HalfPI ) * -radius) + self.startY, size, 0, Math.PI *2 );
-            ctx.fillStyle = '#34A853';
-            ctx.fill();
-            ctx.closePath();
-        }
 
+        }
         tick++;
     })()
     ctx.restore();
-};
+    
+}
 
 /**
  * Measurement function to measure canvas fonts
