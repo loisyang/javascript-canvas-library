@@ -468,7 +468,7 @@ Row.prototype.layout = function (context) {
         nextLeft = left + child.getWidth(context)+ child.borderWidth;
         left = nextLeft;
         child.top = middle - child.getHeight(context)/2;
-        console.log(child + ", "+child.top + ", "+child.left);
+        // console.log(child + ", "+child.top + ", "+child.left);
         if (child.visible) {
             context.save();
             child.draw(context);

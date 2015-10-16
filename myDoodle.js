@@ -2,11 +2,15 @@ var width = 0;
 var height = 0;
 var google = new Text;
 var googleRow = new Row;
+// box sizes for googleRow items
 var boxWidth = 0;
 var boxHeight = 0;
 var rowPadding = 10;
 var canvas;
 var context;
+// width and height for "Google" text when size is 100pt
+var textWidth = 440;
+var textHeight = 182;
 
 window.onload = function() {
     width = window.innerWidth;
@@ -16,7 +20,7 @@ window.onload = function() {
     canvas.setAttribute('height', height + 'px');
     context = canvas.getContext("2d");
     var root = new Doodle(context);  
-    boxWidth = (440+rowPadding*2)/12;
+    boxWidth = (textWidth+rowPadding*2)/12;
     boxHeight = (height/3);
 
     // make a white background for the canvas
@@ -28,20 +32,11 @@ window.onload = function() {
         fill: 'white',
     });
 
-    // row 
-    doodleRow = new Row({
-        left: (width-440-rowPadding*2) / 2,
-        top: 0,
-        width: 440,
-        height: height/3,
-        borderWidth:2
-    })    
-
     // googleRow is a row that contains all 6 graphics containers for the main doodle
     googleRow = new Row({
-        left: (width-440-rowPadding*2) / 2,
-        top: (height-182) / 2,
-        width: 440+rowPadding*2,
+        left: (width-textWidth-rowPadding*2) / 2,
+        top: (height-textHeight) / 2,
+        width: textWidth+rowPadding*2,
         height: height / 3,
         borderWidth: 0
     })
@@ -169,12 +164,19 @@ window.onload = function() {
     });
     container6.children.push(circle6);
 
-    // draw the text "Google" over the graphics
+    googleRow.children.push(container1);
+    googleRow.children.push(container2);
+    googleRow.children.push(container3);
+    googleRow.children.push(container4);
+    googleRow.children.push(container5);
+    googleRow.children.push(container6);
+
+    // draw the text "Google" over the graphics row
     google = new Text({
-        width: 440,
-        height: 182,
-        left: (width-440) / 2,
-        top: (height-182) / 2,
+        width: textWidth,
+        height: textHeight,
+        left: (width-textWidth) / 2,
+        top: (height-textHeight) / 2,
         content: "Google",
         fill: 'white',
         size: 100,
@@ -183,31 +185,21 @@ window.onload = function() {
 
     // draw the text shadow for the text
     googleShadow = new Text({
-        width: 440,
-        height: 182,
-        left: (width-440) / 2+8,
-        top: (height-182) / 2+4,
+        width: textWidth,
+        height: textHeight,
+        left: (width-textWidth) / 2+8,
+        top: (height-textHeight) / 2+4,
         content: "Google",
         fill: '#1f1f1f',
         size: 100,
         font: "Open Sans"
     });
 
-    googleRow.children.push(container1);
-    googleRow.children.push(container2);
-    googleRow.children.push(container3);
-    googleRow.children.push(container4);
-    googleRow.children.push(container5);
-    googleRow.children.push(container6);
-
-
+    // draw four spinning animations at each corner of the page
     var animatedBgTopLeft = new AnimatedDoodle({
         width: width/8,
         height: height/8,
-        left: 10,
-        top: 10,
         borderWidth: 1,
-        fill: "black",
         startX: 0,
         startY: 0
     });
@@ -215,10 +207,7 @@ window.onload = function() {
     var animatedBgTopRight = new AnimatedDoodle({
         width: width/8,
         height: height/8,
-        left: 10,
-        top: 10,
         borderWidth: 1,
-        fill: "black",
         startX: width,
         startY: 0
     });
@@ -226,10 +215,7 @@ window.onload = function() {
     var animatedBgBottomLeft = new AnimatedDoodle({
         width: width/8,
         height: height/8,
-        left: 10,
-        top: 10,
         borderWidth: 1,
-        fill: "black",
         startX: 0,
         startY: height
     });
@@ -237,10 +223,7 @@ window.onload = function() {
     var animatedBgBottomRight = new AnimatedDoodle({
         width: width/8,
         height: height/8,
-        left: 10,
-        top: 10,
         borderWidth: 1,
-        fill: "black",
         startX: width,
         startY: height
     });
@@ -250,6 +233,7 @@ window.onload = function() {
 
 }
 
+// a copy of the window.onload code to make the doodle responsive to window resizing
 window.onresize = function() {
     width = window.innerWidth;
     height = window.innerHeight;
@@ -258,7 +242,7 @@ window.onresize = function() {
     canvas.setAttribute('height', height + 'px');
     context = canvas.getContext("2d");
     var root = new Doodle(context);  
-    boxWidth = (440+rowPadding*2)/12;
+    boxWidth = (textWidth+rowPadding*2)/12;
     boxHeight = (height/3);
 
     // make a white background for the canvas
@@ -270,20 +254,11 @@ window.onresize = function() {
         fill: 'white',
     });
 
-    // row 
-    doodleRow = new Row({
-        left: (width-440-rowPadding*2) / 2,
-        top: 0,
-        width: 440,
-        height: height/3,
-        borderWidth:2
-    })    
-
     // googleRow is a row that contains all 6 graphics containers for the main doodle
     googleRow = new Row({
-        left: (width-440-rowPadding*2) / 2,
-        top: (height-182) / 2,
-        width: 440+rowPadding*2,
+        left: (width-textWidth-rowPadding*2) / 2,
+        top: (height-textHeight) / 2,
+        width: textWidth+rowPadding*2,
         height: height / 3,
         borderWidth: 0
     })
@@ -411,12 +386,19 @@ window.onresize = function() {
     });
     container6.children.push(circle6);
 
-    // draw the text "Google" over the graphics
+    googleRow.children.push(container1);
+    googleRow.children.push(container2);
+    googleRow.children.push(container3);
+    googleRow.children.push(container4);
+    googleRow.children.push(container5);
+    googleRow.children.push(container6);
+
+    // draw the text "Google" over the graphics row
     google = new Text({
-        width: 440,
-        height: 182,
-        left: (width-440) / 2,
-        top: (height-182) / 2,
+        width: textWidth,
+        height: textHeight,
+        left: (width-textWidth) / 2,
+        top: (height-textHeight) / 2,
         content: "Google",
         fill: 'white',
         size: 100,
@@ -425,31 +407,21 @@ window.onresize = function() {
 
     // draw the text shadow for the text
     googleShadow = new Text({
-        width: 440,
-        height: 182,
-        left: (width-440) / 2+8,
-        top: (height-182) / 2+4,
+        width: textWidth,
+        height: textHeight,
+        left: (width-textWidth) / 2+8,
+        top: (height-textHeight) / 2+4,
         content: "Google",
         fill: '#1f1f1f',
         size: 100,
         font: "Open Sans"
     });
 
-    googleRow.children.push(container1);
-    googleRow.children.push(container2);
-    googleRow.children.push(container3);
-    googleRow.children.push(container4);
-    googleRow.children.push(container5);
-    googleRow.children.push(container6);
-
-
+    // draw four spinning animations at each corner of the page
     var animatedBgTopLeft = new AnimatedDoodle({
         width: width/8,
         height: height/8,
-        left: 10,
-        top: 10,
         borderWidth: 1,
-        fill: "black",
         startX: 0,
         startY: 0
     });
@@ -457,10 +429,7 @@ window.onresize = function() {
     var animatedBgTopRight = new AnimatedDoodle({
         width: width/8,
         height: height/8,
-        left: 10,
-        top: 10,
         borderWidth: 1,
-        fill: "black",
         startX: width,
         startY: 0
     });
@@ -468,10 +437,7 @@ window.onresize = function() {
     var animatedBgBottomLeft = new AnimatedDoodle({
         width: width/8,
         height: height/8,
-        left: 10,
-        top: 10,
         borderWidth: 1,
-        fill: "black",
         startX: 0,
         startY: height
     });
@@ -479,10 +445,7 @@ window.onresize = function() {
     var animatedBgBottomRight = new AnimatedDoodle({
         width: width/8,
         height: height/8,
-        left: 10,
-        top: 10,
         borderWidth: 1,
-        fill: "black",
         startX: width,
         startY: height
     });
