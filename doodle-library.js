@@ -685,24 +685,6 @@ OvalClip.prototype.getHeight = function (context) {
     return this.height;
 }
 
-function Rectangle(attrs) {
-    var dflt = {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-    };
-    attrs = mergeWithDefault(attrs, dflt);
-    Primitive.call(this, attrs);
-    // rest of constructor code here
-    this.x = attrs.x;
-    this.y = attrs.y;
-    this.width = attrs.width;
-    this.height = attrs.height;
-}
-Rectangle.inheritsFrom(Primitive);
-
-
 function AnimatedDoodle(attrs) {
     var dflt = {
         startX: 0,
